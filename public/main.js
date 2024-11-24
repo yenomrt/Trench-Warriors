@@ -383,15 +383,19 @@ async function GetInfoFromPF(mint) {
             mode: 'cors',
             body: JSON.stringify({ mint }),
         })
-        .then(response => response.json())
-//.then(data => console.log(data))
-        .catch(error => console.error('Error:', error));
-
-        console.log('Server response:', response);
-
+        
         if (!response.ok) {
-            throw new Error('Failed to fetch top traders data');
-        }
+            throw new Error('Network response was not ok');
+          }
+          const htmlContent = await response.text();
+          console.log(htmlContent);
+          // Insert the HTML content into the target div
+          const infoContainer = document.getElementById('pumpfuninfo-container');
+          if (infoContainer) {
+            infoContainer.innerHTML = htmlContent;
+          } else {
+            console.error('Target div not found');
+          }
 
     } catch (error) {
         console.error('Error getting pf data:', error);

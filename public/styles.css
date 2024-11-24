@@ -112,3 +112,41 @@ body {
 .tab-content-active {
   display: block;
 }
+
+    /* Basic styling for inner tabs */
+    .inner-tabs {
+      display: flex;
+      list-style-type: none;
+      padding: 0;
+      margin: 10px 0;
+      border-bottom: 1px solid #ccc;
+    }
+    .inner-tabs li {
+      margin-right: 10px;
+    }
+    .inner-tabs a {
+      text-decoration: none;
+      padding: 5px 15px;
+      display: block;
+      background-color: #e1e1e1;
+      color: #000;
+      border-radius: 4px 4px 0 0;
+      border: 1px solid #ccc;
+      border-bottom: none;
+    }
+    .inner-tabs a.active {
+      background-color: #777;
+      color: white;
+      font-weight: bold;
+    }
+    .inner-tab-content {
+      display: none;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-top: none;
+      background-color: #f9f9f9;
+      border-radius: 0 4px 4px 4px;
+    }
+    .inner-tab-content.active {
+      display: block;
+    }

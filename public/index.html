@@ -10,6 +10,7 @@
 <body>
     <!-- Tabs Section -->
     <div class="tabs">
+        <div class="tab" id="tab-4">Pumpfun</div>
         <div class="tab tab-active" id="tab-1">Holders</div>
         <div class="tab" id="tab-2">Traders</div>
         <div class="tab" id="tab-3">Wallet Tokens</div>
@@ -45,6 +46,28 @@
         <div id="tokenDetailsTab2" class="holders-container"></div>
     </div>
     
+    <div class="tab-content" id="tab-content-4">
+        <h2>Pump fun</h2>
+        <p>Pump fun.</p>
+        
+        <!-- Search Token Section (for the second tab) -->
+        <!-- Inner Tab Headers (Nested Tabs) -->
+    <ul class="inner-tabs">
+        <li><a href="#inner-tab1" class="active">Inner Tab 1</a></li>
+        <li><a href="#inner-tab2">Inner Tab 2</a></li>
+      </ul>
+      
+      <!-- Inner Tab Content (Nested Tabs) -->
+      <div id="inner-tab1" class="inner-tab-content active">
+        <h3>Inner Tab 1 Content</h3>
+        <div id="pumpfuninfo-container"></div>
+      </div>
+      
+      <div id="inner-tab2" class="inner-tab-content">
+        <h3>Inner Tab 2 Content</h3>
+        <p>This is the content for Inner Tab 2 inside Pumpfun.</p>
+      </div>
+    </div>
 
     <div class="tab-content" id="tab-content-3">
         <div class="container">
@@ -100,6 +123,26 @@
                 const tabContentId = `tab-content-${tab.id.split('-')[1]}`;
                 document.getElementById(tabContentId).classList.add('tab-content-active');
             });
+        });
+        // JavaScript for inner tabs
+        document.querySelectorAll('.inner-tabs a').forEach(innerTab => {
+        innerTab.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Remove active class from all inner tabs
+            this.closest('.inner-tabs').querySelectorAll('a').forEach(t => t.classList.remove('active'));
+            
+            // Add active class to the clicked inner tab
+            this.classList.add('active');
+            
+            // Hide all inner tab contents within this section
+            const parentContent = this.closest('.tab-content');
+            parentContent.querySelectorAll('.inner-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Show the corresponding inner tab content
+            const activeInnerTab = parentContent.querySelector(this.getAttribute('href'));
+            activeInnerTab.classList.add('active');
+        });
         });
     </script>
 </body>

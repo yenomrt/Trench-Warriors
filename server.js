@@ -102,9 +102,139 @@ app.post('/get-pf-info2', async (req, res) => {
     
 });
 
+app.get('/get-pf-info4', async (req, res) => {
+    console.log('Gettinf pf info on server');
+    const { mint } = req.body;
+    if (!mint) {
+        console.error('No mint address provided');
+        return res.status(400).json({ error: 'Token mint address is required' });
+    }
+
+    try {
+      const coinData = await fetchCoinData(mint); // Assuming this function fetches and returns the coin data
+  
+      // Destructure the coinData to separate prevcoins
+      const { prevcoins, ...generalInfo } = coinData;
+  
+      // Generate HTML for general information table
+      let generalInfoTable = '<table border="1"><tr>';
+      for (let key in generalInfo) {
+        generalInfoTable += `<th>${key}</th>`;
+      }
+      generalInfoTable += '</tr><tr>';
+      for (let key in generalInfo) {
+        generalInfoTable += `<td>${generalInfo[key]}</td>`;
+      }
+      generalInfoTable += '</tr></table>';
+  
+      // Generate HTML for prevcoins table
+      let prevcoinsTable = '<table border="1"><tr><th>Previous Coins</th></tr>';
+      prevcoins.forEach(coin => {
+        prevcoinsTable += `<tr><td>${coin}</td></tr>`;
+      });
+      prevcoinsTable += '</table>';
+  
+      // Combine both tables into a single HTML response
+      const htmlResponse = `
+        <html>
+          <head>
+            <title>Coin Analysis</title>
+          </head>
+          <body>
+            <h1>Coin Analysis</h1>
+            <h2>General Information</h2>
+            ${generalInfoTable}
+            <h2>Previous Coins</h2>
+            ${prevcoinsTable}
+          </body>
+        </html>
+      `;
+  
+      // Send the HTML response
+      res.send(htmlResponse);
+    } catch (error) {
+      console.error('Error fetching coin data:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
+  
+async function fetchCoinData(mint) {
+    try {
+      const url = `https://pump.fun/coin/${mint}`;
+      const { data } = await axios.get(url);
+      const $ = cheerio.load(data);
+  
+      const match = data.match(/{\\"coin\\".*?(\{[^}]*\}|\})*}/s);
+  
+      if (match) {
+        try {
+          let jsonString = match[0].replace(/\\"/g, '"');
+          console.log(jsonString);
+          const jsonData = JSON.parse(jsonString);
+          console.log("Parsed JSON Data:", jsonData);
+          console.log("Creator:", jsonData.coin.creator);
+  
+          try {
+            const url2 = `https://frontend-api.pump.fun/coins/user-created-coins/${jsonData.coin.creator}?offset=0&limit=20&includeNsfw=false`;
+            console.log(url2);
+            const data2 = await axios.get(url2);
+            console.log(data2.data);
+            jsonData.coin.prevcoins = data2.data;
+            console.log(1);
+            const { prevcoins, ...generalInfo } = jsonData.coin;
+            
+            // Generate HTML for general information table
+            let generalInfoTable = '<table border="1"><tr>';
+            for (let key in generalInfo) {
+                generalInfoTable += `<th>${key}</th>`;
+            }
+            generalInfoTable += '</tr><tr>';
+            for (let key in generalInfo) {
+                generalInfoTable += `<td>${generalInfo[key]}</td>`;
+            }
+            generalInfoTable += '</tr></table>';
+        
+            // Generate HTML for prevcoins table
+            let prevcoinsTable = '<table border="1"><tr><th>Previous Coins</th></tr>';
+            prevcoins.forEach(coin => {
+                prevcoinsTable += `<tr><td>${coin}</td></tr>`;
+            });
+            prevcoinsTable += '</table>';
+        
+            // Combine both tables into a single HTML response
+            const htmlResponse = `
+                
+                    <h1>Coin Analysis</h1>
+                    <h2>General Information</h2>
+                    ${generalInfoTable}
+                    <h2>Previous Coins</h2>
+                    ${prevcoinsTable}
+                
+            `;
+            console.log(htmlResponse);
+            // Send the HTML response
+            res.send(htmlResponse);
+          } catch (error) {
+            console.error("Error fetching creator's coins:", error);
+          }
+  
+          // Send the response
+          return jsonData;
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
+
+  
+
 app.post('/get-pf-info', async (req, res) => {
     const { mint } = req.body;
-
+    
     if (!mint) {
         console.error('No mint address provided');
         return res.status(400).json({ error: 'Token mint address is required' });
@@ -135,11 +265,49 @@ app.post('/get-pf-info', async (req, res) => {
                 data2 = await axios.get(url2);
                 console.log(data2.data);
                 jsonData.coin.prevcoins = data2.data;
+                const { prevcoins, ...generalInfo } = jsonData.coin;
+            
+                // Generate HTML response with vertical layout tables
+                let generalInfoTable = '<table border="1">';
+                for (let key in jsonData.coin) {
+                if (key !== 'prevcoins') {
+                    generalInfoTable += `<tr><th>${key}</th><td>${jsonData.coin[key]}</td></tr>`;
+                }
+                }
+                generalInfoTable += '</table>';
+
+                // Generate HTML for prevcoins table
+                let prevcoinsTable = '<table border="1">';
+                if (jsonData.coin.prevcoins.length > 0) {
+                jsonData.coin.prevcoins.slice(1).forEach((coin, index) => {
+                    prevcoinsTable += `<tr><th colspan="2">Previous Coin ${index + 1}</th></tr>`;
+                    for (let key in coin) {
+                    prevcoinsTable += `<tr><th>${key}</th><td>${coin[key]}</td></tr>`;
+                    }
+                });
+                } else {
+                prevcoinsTable += '<tr><th>No previous coins available</th></tr>';
+                }
+                prevcoinsTable += '</table>';
+            
+                // Combine both tables into a single HTML response
+                const htmlResponse = `
+                    
+                        <h1>Coin Analysis</h1>
+                        <h2>General Information</h2>
+                        ${generalInfoTable}
+                        <h2>Previous Coins</h2>
+                        ${prevcoinsTable}
+                    
+                `;
+                console.log(htmlResponse);
+                // Send the HTML response
+                res.send(htmlResponse);
             }
             catch (error) {
                 console.error("Error parsing JSON:", error);
             }
-            res.json(jsonData)
+            //res.json(jsonData)
 
             // Access specific fields, for example:
             //console.log("Twitter Link:", jsonData.twitter);
