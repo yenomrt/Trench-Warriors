@@ -1,0 +1,39 @@
+{
+    "manifest_version": 3,
+    "name": "My Chrome Side Panel",
+    "version": "1.5",
+    "description": "A Chrome extension that adds a custom side panel.",
+    "permissions": ["sidePanel", "activeTab", "scripting"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_title": "Open Side Panel"
+    },
+    "side_panel": {
+      "default_path": "side_panel.html"
+    },
+    "content_scripts": [
+        {
+          "matches": ["https://dexscreener.com/*"],
+          "js": ["dexscreener.js"],
+          "run_at": "document_idle"
+        },
+        {
+          "matches": ["https://bullx.io/pump-vision*"],
+          "js": ["bullx_pump_vision.js"],
+          "run_at": "document_idle"
+        },
+        {
+          "matches": ["https://www.tradingview.com/*"],
+          "js": ["tradingview.js"],
+          "run_at": "document_idle"
+        }
+      ],
+      "host_permissions": [
+        "https://dexscreener.com/*",
+        "https://bullx.io/*",
+        "https://www.tradingview.com/*"
+      ]
+  }
+  

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Phantom Wallet</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Tabs Section -->
+    <div class="tabs">
+        <div class="tab tab-active" id="tab-1">Holders</div>
+        <div class="tab" id="tab-2">Traders</div>
+        <div class="tab" id="tab-3">Wallet Tokens</div>
+    </div>
+
+
+    <!-- Tab Content -->
+    <div class="tab-content tab-content-active" id="tab-content-1">
+        <h2>Holders</h2>
+        <p>This is the content for Tab 1.</p>
+    
+        <!-- Search Token Section (for the first tab) -->
+        <div class="search-container">
+            <input type="text" id="tokenSearchInputTab1" class="search-input" placeholder="Enter token ID...">
+            <button id="searchButtonTab1" class="search-button">Search</button>
+        </div>
+        
+        <div id="tokenDetailsTab1" class="holders-container"></div>
+    </div>
+    
+
+
+    <div class="tab-content" id="tab-content-2">
+        <h2>Traders</h2>
+        <p>This is the content for Tab 2 (Copy).</p>
+    
+        <!-- Search Token Section (for the second tab) -->
+        <div class="search-container">
+            <input type="text" id="tokenSearchInputTab2" class="search-input" placeholder="Enter token ID...">
+            <button id="searchButtonTab2" class="search-button">Search</button>
+        </div>
+    
+        <div id="tokenDetailsTab2" class="holders-container"></div>
+    </div>
+    
+
+    <div class="tab-content" id="tab-content-3">
+        <div class="container">
+            <h1>Connect Your Phantom Wallet</h1>
+            <button id="connectButton" class="install-button">Connect Wallet</button>
+            <p id="status"></p>
+            <h2>Your Tokens:</h2>
+            <ul id="coinsList"></ul>
+            <!-- Search Token Section -->
+            <div class="search-container">
+                <input type="text" id="tokenSearchInput" class="search-input" placeholder="Enter token ID...">
+                <button class="search-button" id="searchButton">Search</button>
+            </div>
+            <!-- Tokens Table -->
+            <table id="tokenTable">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Symbol</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="tokenDetails" class="holders-container"></div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script>
+        const API_KEY = '586264ce-df55-4e09-8f4f-3cf8dd64940e'; // Replace with your actual API key
+    </script>
+    <script src="main.js" type="text/javascript"></script>
+    <script>
+                // Listen for messages from the parent
+        window.addEventListener('message', (event) => {
+            // Handle incoming messages from the parent
+            console.log('Message from parent:', event.data);
+            GetInfoFromPF(event.data.text); 
+        });
+    </script>
+    <script>
+        // Handle Tab Switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('tab-content-active'));
+                // Add active class to clicked tab
+                tab.classList.add('tab-active');
+                // Show corresponding tab content
+                const tabContentId = `tab-content-${tab.id.split('-')[1]}`;
+                document.getElementById(tabContentId).classList.add('tab-content-active');
+            });
+        });
+    </script>
+</body>
+</html>
